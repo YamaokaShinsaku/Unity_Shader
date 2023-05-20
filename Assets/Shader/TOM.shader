@@ -70,6 +70,7 @@ Shader "MyShader/TOM"
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
                 // フォグ強度の計算
                 o.fogFactor = ComputeFogFactor(o.vertex.z);
+
                 return o;
             }            
             // フラグメントシェーダー
@@ -79,6 +80,7 @@ Shader "MyShader/TOM"
                 float4 col = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv);
                 // フォグを適応
                 col.rgb = MixFog(col.rgb, i.fogFactor);
+
                 return col;
             }
             ENDHLSL           
