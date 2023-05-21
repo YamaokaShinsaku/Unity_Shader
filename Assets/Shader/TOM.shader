@@ -71,19 +71,37 @@ Shader "MyShader/TOM"
                 // フォグ強度の計算
                 o.fogFactor = ComputeFogFactor(o.vertex.z);
 
+                // 法線をワールド空間へ変換
+                o.normal = TransformObjectToWorldNormal(v.normal);
+                // テクスチャ(_BumpMap)とuv座標を関連づける
+                o.uvNormal = TRANSFORM_TEX(v.uv, _BumpMap);
+                // 接線をワールド空間へ変換
+                o.tangent = v.tangent;
+                o.tangent.xyz = TransformObjectToWorldDir(v.tangent.xyz);
+                // 従法線を計算（法線と接線の外積）
+                o.binormal
+                    = normalize(cross(v.normal, v.tangent.xyz) * v.tangent.w * unity_WorldTransformParams.w);
+
                 return o;
-            }            
+            }
             // フラグメントシェーダー
             float4 frag(v2f i) : SV_Target
             {
                 // テクスチャのサンプリング
                 float4 col = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv);
+
+                // ノーマルマップから法線情報を取得
+                float3 localNormal
+                    = UnpackNormalScale(SAMPLE_TEXTURE2D(_BumpMap, sampler_BumpMap, i.uvNormal), _BumpScale);
+                // タンジェントスペースの法線をワールドスペースに変換
+                i.normal = i.tangent * localNormal.x + i.binormal * localNormal.y + i.normal * locaclNormal.z;
+
                 // フォグを適応
                 col.rgb = MixFog(col.rgb, i.fogFactor);
 
                 return col;
             }
-            ENDHLSL           
+            ENDHLSL
         }
     }
 }
