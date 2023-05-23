@@ -11,23 +11,23 @@ Shader "MyShader/TOM"
 
         // リム陰(リムライトの陰影版) ベース
         // 色（ベース）
-        _LimShadeColor1("RimShadow  BaseColor", Color) = (0, 0, 0, 1)
+        _LimShadeColor1("RimShade  BaseColor", Color) = (0, 0, 0, 1)
         // 影響度
-        _LimShadeColorWeight1("RimShadow Influence", Range(0, 1)) = 0.5
+        _LimShadeColorWeight1("RimShade Influence", Range(0, 1)) = 0.5
         // グラデーション範囲
-        _LimShadeMinPower1("RimShadow  GradationRange", Range(0, 1)) = 0.3
+        _LimShadeMinPower1("RimShade  GradationRange", Range(0, 1)) = 0.3
         // 最濃リム陰の太さ
-        _LimShadePowerWeight1("RimShadow  Intensity", Range(1, 10)) = 10      
+        _LimShadePowerWeight1("RimShade  Intensity", Range(1, 10)) = 10      
 
         // 「外側」 のリム陰
         // 色
-        _LimShadeColor2("RimShadow OutsideColor", Color) = (0, 0, 0, 1)
+        _LimShadeColor2("RimShade OutsideColor", Color) = (0, 0, 0, 1)
         // 影響度
-        _LimShadeColorWeight2("RimShadow OutsideInfluence", Range(0, 1)) = 0.8
+        _LimShadeColorWeight2("RimShade OutsideInfluence", Range(0, 1)) = 0.8
         // グラデーション範囲
-        _LimShadeMinPower2("RimShadow  OutsideGradationRange", Range(0, 1)) = 0.3
+        _LimShadeMinPower2("RimShade  OutsideGradationRange", Range(0, 1)) = 0.3
         // 最濃リム陰の太さ
-        _LimShadePowerWeight2("RimShadow  OutSideIntensity", Range(1, 10)) = 2
+        _LimShadePowerWeight2("RimShade  OutSideIntensity", Range(1, 10)) = 2
     }
     SubShader
     {
