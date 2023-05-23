@@ -76,7 +76,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BumpMap:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 6d4d8764efc988342bd6ff7a4541f09c, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _ClippingMask:
@@ -416,6 +416,12 @@ Material:
     - _Is_ViewCoord_Scroll: 0
     - _Is_ViewShift: 0
     - _LightDirection_MaskOn: 0
+    - _LimShadeColorWeight1: 0.5
+    - _LimShadeColorWeight2: 0.8
+    - _LimShadeMinPower1: 0.3
+    - _LimShadeMinPower2: 0.3
+    - _LimShadePowerWeight1: 10
+    - _LimShadePowerWeight2: 2
     - _LinkDetailsWithBase: 1
     - _MatCap: 0
     - _MaterialID: 1
@@ -560,6 +566,8 @@ Material:
     - _HighlightMaskColor: {r: 1, g: 1, b: 0, a: 1}
     - _InvPrimScale: {r: 1, g: 1, b: 0, a: 0}
     - _IridescenceThicknessRemap: {r: 0, g: 1, b: 0, a: 0}
+    - _LimShadeColor1: {r: 0, g: 0, b: 0, a: 1}
+    - _LimShadeColor2: {r: 0, g: 0, b: 0, a: 1}
     - _MatCapColor: {r: 1, g: 1, b: 1, a: 1}
     - _OutlineMaskColor: {r: 0, g: 0, b: 0, a: 1}
     - _Outline_Color: {r: 0.6784314, g: 0.30980393, b: 0.14509805, a: 1}

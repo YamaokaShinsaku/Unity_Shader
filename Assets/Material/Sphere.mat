@@ -106,8 +106,11 @@ Material:
     - _Glossiness: 0
     - _GlossyReflections: 0
     - _LimShadeColorWeight1: 0.5
+    - _LimShadeColorWeight2: 0.8
     - _LimShadeMinPower1: 0.3
+    - _LimShadeMinPower2: 0.3
     - _LimShadePowerWeight1: 10
+    - _LimShadePowerWeight2: 2
     - _Metallic: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.005
@@ -125,5 +128,6 @@ Material:
     - _Color: {r: 0, g: 0.73424315, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _LimShadeColor1: {r: 0, g: 0, b: 0, a: 1}
+    - _LimShadeColor2: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []

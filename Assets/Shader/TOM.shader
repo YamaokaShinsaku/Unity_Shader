@@ -10,14 +10,24 @@ Shader "MyShader/TOM"
         _BumpScale("Normal Scale", Range(0, 2)) = 1
 
         // リム陰(リムライトの陰影版) ベース
-        // リム陰の色 （ベース）
-        _LimShadeColor1("RimShadow  Base", Color) = (0, 0, 0, 1)
-        // リム陰色の影響度
+        // 色（ベース）
+        _LimShadeColor1("RimShadow  BaseColor", Color) = (0, 0, 0, 1)
+        // 影響度
         _LimShadeColorWeight1("RimShadow Influence", Range(0, 1)) = 0.5
-        // リム陰のグラデーション範囲
+        // グラデーション範囲
         _LimShadeMinPower1("RimShadow  GradationRange", Range(0, 1)) = 0.3
         // 最濃リム陰の太さ
         _LimShadePowerWeight1("RimShadow  Intensity", Range(1, 10)) = 10      
+
+        // 「外側」 のリム陰
+        // 色
+        _LimShadeColor2("RimShadow OutsideColor", Color) = (0, 0, 0, 1)
+        // 影響度
+        _LimShadeColorWeight2("RimShadow OutsideInfluence", Range(0, 1)) = 0.8
+        // グラデーション範囲
+        _LimShadeMinPower2("RimShadow  OutsideGradationRange", Range(0, 1)) = 0.3
+        // 最濃リム陰の太さ
+        _LimShadePowerWeight2("RimShadow  OutSideIntensity", Range(1, 10)) = 2
     }
     SubShader
     {
@@ -101,6 +111,11 @@ Shader "MyShader/TOM"
             float _LimShadeMinPower1;
             float _LimShadePowerWeight1;
 
+            float3 _LimShadeColor2;
+            float _LimShadeColorWeight2;
+            float _LimShadeMinPower2;
+            float _LimShadePowerWeight2;
+
             CBUFFER_END
             
             // 頂点シェーダー
@@ -135,6 +150,8 @@ Shader "MyShader/TOM"
             {
                 // テクスチャのサンプリング
                 float4 col = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv);
+                // テクスチャから取得したオリジナルの色を保持
+                float albedo = col;
 
                 // ノーマルマップから法線情報を取得
                 float3 localNormal 
@@ -142,17 +159,25 @@ Shader "MyShader/TOM"
                 // タンジェントスペースの法線をワールドスペースに変換
                 i.normal = i.tangent * localNormal.x + i.binormal * localNormal.y + i.normal * localNormal.z;
 
-                // フォグを適応
-                col.rgb = MixFog(col.rgb, i.fogFactor);
-
                 // 陰１(視線方向に依存して体のフチに色を乗算)の計算を行う
                 float limPower = 1 - max(0, dot(i.normal, i.viewDir));
                 // 陰の影響が始まる範囲を調整するパラメータ
                 float limShadePower = inverseLerp(_LimShadeMinPower1, 1.0, limPower);
                 // 陰色の反映範囲を調整するパラメータ
                 limShadePower = min(limShadePower * _LimShadePowerWeight1, 1);
-                // リム陰を作成する
-                col.rgb = lerp(col.rgb, col.rgb * _LimShadeColor1, limShadePower * _LimShadeColorWeight1);
+                // リム陰を調整
+                col.rgb = lerp(col.rgb, albedo * _LimShadeColor1, limShadePower * _LimShadeColorWeight1);
+
+                // 陰２(陰１の上からさらに色を乗せる)の計算を行う
+                limShadePower = inverseLerp(_LimShadeMinPower2, 1.0, limPower);
+                // 陰色の反映範囲を調整するパラメータ
+                limShadePower = min(limShadePower * _LimShadePowerWeight2, 1);
+                // リム陰を調整
+                col.rgb = lerp(col.rgb, albedo * _LimShadeColor2, limShadePower * _LimShadeColorWeight2);
+
+
+                // フォグを適応
+                col.rgb = MixFog(col.rgb, i.fogFactor);
 
                 return col;
             }
