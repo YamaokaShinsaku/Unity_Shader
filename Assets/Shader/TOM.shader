@@ -2,11 +2,22 @@ Shader "MyShader/TOM"
 {
     Properties
     {
-        // メインテクスチャー
+        // メインテクスチャ
         _MainTex("Texture", 2D) = "white" {}
-        // バンプマップ
+
+        // ノーマルマップ
         _BumpMap("Normal Map", 2D) = "bump" {}
         _BumpScale("Normal Scale", Range(0, 2)) = 1
+
+        // リム陰(リムライトの陰影版) ベース
+        // リム陰の色 （ベース）
+        _LimShadeColor1("RimShadow  Base", Color) = (0, 0, 0, 1)
+        // リム陰色の影響度
+        _LimShadeColorWeight1("RimShadow Influence", Range(0, 1)) = 0.5
+        // リム陰のグラデーション範囲
+        _LimShadeMinPower1("RimShadow  GradationRange", Range(0, 1)) = 0.3
+        // 最濃リム陰の太さ
+        _LimShadePowerWeight1("RimShadow  Intensity", Range(1, 10)) = 10      
     }
     SubShader
     {
@@ -35,6 +46,11 @@ Shader "MyShader/TOM"
             #pragma multi_compile_fog
             // Core.hlslをインクルードする
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+            // Lighting.hlslをインクルードする
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
+            // 自作関数ファイルをインクルードする
+            #include "Custom.cginc"
+
             
             // 頂点の入力
             struct appdata
@@ -60,6 +76,9 @@ Shader "MyShader/TOM"
                 float2 uvNormal : TEXCOORD2;
                 float4 tangent  : TANGENT;
                 float3 binormal : TEXCOORD3;
+
+                // 視線方向を定義
+                float3 viewDir : TEXCOORD4;
             };
             
             // 画像を定義
@@ -76,6 +95,11 @@ Shader "MyShader/TOM"
 
             float4 _BumpMap_ST;
             float _BumpScale;
+
+            float3 _LimShadeColor1;
+            float _LimShadeColorWeight1;
+            float _LimShadeMinPower1;
+            float _LimShadePowerWeight1;
 
             CBUFFER_END
             
@@ -101,6 +125,9 @@ Shader "MyShader/TOM"
                 o.binormal 
                     = normalize(cross(v.normal, v.tangent.xyz) * v.tangent.w * unity_WorldTransformParams.w);
 
+                // 視線方向を計算
+                o.viewDir = normalize(-GetViewForwardDir());
+
                 return o;
             }
             // フラグメントシェーダー
@@ -117,6 +144,15 @@ Shader "MyShader/TOM"
 
                 // フォグを適応
                 col.rgb = MixFog(col.rgb, i.fogFactor);
+
+                // 陰１(視線方向に依存して体のフチに色を乗算)の計算を行う
+                float limPower = 1 - max(0, dot(i.normal, i.viewDir));
+                // 陰の影響が始まる範囲を調整するパラメータ
+                float limShadePower = inverseLerp(_LimShadeMinPower1, 1.0, limPower);
+                // 陰色の反映範囲を調整するパラメータ
+                limShadePower = min(limShadePower * _LimShadePowerWeight1, 1);
+                // リム陰を作成する
+                col.rgb = lerp(col.rgb, col.rgb * _LimShadeColor1, limShadePower * _LimShadeColorWeight1);
 
                 return col;
             }
