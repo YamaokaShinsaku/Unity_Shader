@@ -28,6 +28,12 @@ Shader "MyShader/TOM"
         _LimShadeMinPower2("RimShade  OutsideGradationRange", Range(0, 1)) = 0.3
         // 最濃リム陰の太さ
         _LimShadePowerWeight2("RimShade  OutSideIntensity", Range(1, 10)) = 2
+
+        // リム陰のマスク
+        // グラデーション範囲
+        _LimShadeMaskMinPower("RimShadeMask  GradationRange", Range(0, 1)) = 0.3
+        // 最濃リム陰マスクの太さ
+        _LimShadeMaskPowerWeight("RimShadeMask  Intensity", Range(0, 10)) = 2
     }
     SubShader
     {
@@ -116,6 +122,9 @@ Shader "MyShader/TOM"
             float _LimShadeMinPower2;
             float _LimShadePowerWeight2;
 
+            float _LimShadeMaskMinPower;
+            float _LimShadeMaskPowerWeight;
+
             CBUFFER_END
             
             // 頂点シェーダー
@@ -151,7 +160,7 @@ Shader "MyShader/TOM"
                 // テクスチャのサンプリング
                 float4 col = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv);
                 // テクスチャから取得したオリジナルの色を保持
-                float albedo = col;
+                float4 albedo = col;
 
                 // ノーマルマップから法線情報を取得
                 float3 localNormal 
@@ -166,15 +175,22 @@ Shader "MyShader/TOM"
                 // 陰色の反映範囲を調整するパラメータ
                 limShadePower = min(limShadePower * _LimShadePowerWeight1, 1);
                 // リム陰を調整
-                col.rgb = lerp(col.rgb, albedo * _LimShadeColor1, limShadePower * _LimShadeColorWeight1);
+                col.rgb = lerp(col.rgb, albedo.rgb * _LimShadeColor1, limShadePower * _LimShadeColorWeight1);
 
                 // 陰２(陰１の上からさらに色を乗せる)の計算を行う
                 limShadePower = inverseLerp(_LimShadeMinPower2, 1.0, limPower);
                 // 陰色の反映範囲を調整するパラメータ
                 limShadePower = min(limShadePower * _LimShadePowerWeight2, 1);
                 // リム陰を調整
-                col.rgb = lerp(col.rgb, albedo * _LimShadeColor2, limShadePower * _LimShadeColorWeight2);
+                col.rgb = lerp(col.rgb, albedo.rgb * _LimShadeColor2, limShadePower * _LimShadeColorWeight2);
 
+                // 陰のマスクの計算
+                 // マスクの影響が始まる範囲を調整するパラメータ
+                float limShadeMaskPower = inverseLerp(_LimShadeMaskMinPower, 1, limPower);
+                // マスクの反映範囲を調整するパラメータ
+                limShadeMaskPower = min(limShadeMaskPower * _LimShadeMaskPowerWeight, 1);
+                // 陰のマスクを調整
+                col.rgb = lerp(col.rgb, albedo.rgb, limShadeMaskPower);
 
                 // フォグを適応
                 col.rgb = MixFog(col.rgb, i.fogFactor);

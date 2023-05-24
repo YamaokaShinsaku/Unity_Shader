@@ -418,6 +418,8 @@ Material:
     - _LightDirection_MaskOn: 0
     - _LimShadeColorWeight1: 0.5
     - _LimShadeColorWeight2: 0.8
+    - _LimShadeMaskMinPower: 0.3
+    - _LimShadeMaskPowerWeight: 2
     - _LimShadeMinPower1: 0.3
     - _LimShadeMinPower2: 0.3
     - _LimShadePowerWeight1: 10
