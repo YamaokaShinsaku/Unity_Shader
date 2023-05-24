@@ -40,6 +40,10 @@ Shader "MyShader/TOM"
         _LimLightWeight("RimLight  Influence", Range(0, 1)) = 0.5
         // グラデーション範囲
         _LimLightPower("RimLight  GradationRange", Range(1, 5)) = 3
+
+        // アンビエントカラー
+        _AmbientColor("Ambient  Color", Color) = (0.5, 0.5, 0.5, 1)
+
     }
     SubShader
     {
@@ -134,6 +138,8 @@ Shader "MyShader/TOM"
             float _LimLightPower;
             float _LimLightWeight;
 
+            float3 _AmbientColor;
+
             CBUFFER_END
             
             // 頂点シェーダー
@@ -210,6 +216,10 @@ Shader "MyShader/TOM"
                 float3 limLight = pow(saturate(limPower * limLightPower), _LimLightPower) * light.color;
                 // リムライトの色を加算
                 col.rgb += limLight * _LimLightWeight;
+
+                // Half-Lambert拡散反射光
+                float3 diffuseLight = CalcHalfLambertDiffuse(light.direction, light.color, i.normal);
+                col.rgb *= diffuseLight + _AmbientColor;
 
                 // フォグを適応
                 col.rgb = MixFog(col.rgb, i.fogFactor);
