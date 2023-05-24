@@ -105,6 +105,8 @@ Material:
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
+    - _LimLightPower: 5
+    - _LimLightWeight: 0.5
     - _LimShadeColorWeight1: 0.5
     - _LimShadeColorWeight2: 0.8
     - _LimShadeMaskMinPower: 0.3
