@@ -34,6 +34,12 @@ Shader "MyShader/TOM"
         _LimShadeMaskMinPower("RimShadeMask  GradationRange", Range(0, 1)) = 0.3
         // 最濃リム陰マスクの太さ
         _LimShadeMaskPowerWeight("RimShadeMask  Intensity", Range(0, 10)) = 2
+
+        // リムライト
+        // 影響範囲
+        _LimLightWeight("RimLight  Influence", Range(0, 1)) = 0.5
+        // グラデーション範囲
+        _LimLightPower("RimLight  GradationRange", Range(1, 5)) = 3
     }
     SubShader
     {
@@ -125,6 +131,9 @@ Shader "MyShader/TOM"
             float _LimShadeMaskMinPower;
             float _LimShadeMaskPowerWeight;
 
+            float _LimLightPower;
+            float _LimLightWeight;
+
             CBUFFER_END
             
             // 頂点シェーダー
@@ -191,6 +200,16 @@ Shader "MyShader/TOM"
                 limShadeMaskPower = min(limShadeMaskPower * _LimShadeMaskPowerWeight, 1);
                 // 陰のマスクを調整
                 col.rgb = lerp(col.rgb, albedo.rgb, limShadeMaskPower);
+
+                // リムライト
+                // メインライトの情報を取得
+                Light light = GetMainLight();
+                // 補間値を計算
+                float limLightPower = 1 - max(0, dot(i.normal, -light.direction));
+                // 最終的な反射光（リムライト）
+                float3 limLight = pow(saturate(limPower * limLightPower), _LimLightPower) * light.color;
+                // リムライトの色を加算
+                col.rgb += limLight * _LimLightWeight;
 
                 // フォグを適応
                 col.rgb = MixFog(col.rgb, i.fogFactor);
