@@ -26,3 +26,28 @@ float3 CalcHalfLambertDiffuse(float3 lightDirection, float3 lightColor, float3 n
     // 拡散反射光を計算する
     return lightColor * t;
 }
+
+/// <summary>
+/// Phong鏡面反射光を計算
+/// </summary>
+/// lightDirection : ライトの方向
+/// lightColor : ライトの色
+/// toEye : 頂点から視線位置へのベクトル
+/// normal : 法線
+/// shinePower : 反射光の範囲
+float3 CalcPhongSpecular(float3 lightDirection, float3 lightColor, float3 toEye, float3 normal, float shinePower)
+{
+    // 反射ベクトルを求める
+    float3 refVec = reflect(lightDirection, normal);
+    // 光が当たったサーフェイスから視点に伸びるベクトルを求める
+    toEye = normalize(toEye);
+    // 鏡面反射の強さを求める
+    float t = dot(refVec, toEye);
+    // 鏡面反射の強さを０以上の数値にする
+    t = max(0.0f, t);
+    // 鏡面反射の強さを絞る
+    t = pow(t, shinePower);
+
+    // 鏡面反射光を求める
+    return lightColor * t;
+}

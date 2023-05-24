@@ -44,6 +44,12 @@ Shader "MyShader/TOM"
         // アンビエントカラー
         _AmbientColor("Ambient  Color", Color) = (0.5, 0.5, 0.5, 1)
 
+        // スペキュラ
+        // 滑らかさ
+        _Smoothness("Smoothness", Range(0, 1)) = 0.5
+        // 影響度
+        _SpecularRate("Specular  Influence", Range(0, 1)) = 0.3
+
     }
     SubShader
     {
@@ -105,6 +111,8 @@ Shader "MyShader/TOM"
 
                 // 視線方向を定義
                 float3 viewDir : TEXCOORD4;
+                // 頂点から視線位置へのベクトル
+                float3 toEye : TEXCOORD5;
             };
             
             // 画像を定義
@@ -140,6 +148,9 @@ Shader "MyShader/TOM"
 
             float3 _AmbientColor;
 
+            float _Smoothness;
+            float _SpecularRate;
+
             CBUFFER_END
             
             // 頂点シェーダー
@@ -166,7 +177,8 @@ Shader "MyShader/TOM"
 
                 // 視線方向を計算
                 o.viewDir = normalize(-GetViewForwardDir());
-
+                // 頂点位置から視線方向へのベクトルを計算
+                o.toEye = normalize(GetWorldSpaceViewDir(TransformObjectToWorld(v.vertex.xyz)));
                 return o;
             }
             // フラグメントシェーダー
@@ -219,7 +231,13 @@ Shader "MyShader/TOM"
 
                 // Half-Lambert拡散反射光
                 float3 diffuseLight = CalcHalfLambertDiffuse(light.direction, light.color, i.normal);
-                col.rgb *= diffuseLight + _AmbientColor;
+                // 反射光の範囲
+                float shinePower = lerp(0.5, 10, _Smoothness);
+                // スペキュラーライトを作成
+                float3 specularLight = CalcPhongSpecular(-light.direction, light.color, i.toEye, i.normal, shinePower);
+                specularLight = lerp(0, specularLight, _SpecularRate);
+
+                col.rgb *= diffuseLight + specularLight + _AmbientColor;
 
                 // フォグを適応
                 col.rgb = MixFog(col.rgb, i.fogFactor);
