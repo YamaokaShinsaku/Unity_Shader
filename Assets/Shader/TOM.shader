@@ -50,6 +50,12 @@ Shader "MyShader/TOM"
         // 影響度
         _SpecularRate("Specular  Influence", Range(0, 1)) = 0.3
 
+        // アウトライン
+        // 幅
+        _OutlineWidth("Outline  Width", Range(0, 1)) = 0.1
+        // 色
+        _OutlineColor("Outline  Color", Color) = (0, 0, 0, 1)
+
     }
     SubShader
     {
@@ -64,6 +70,67 @@ Shader "MyShader/TOM"
 
         Pass
         {
+            // 前面をカリング
+            Cull Front
+
+            // HLSLを使用する
+            HLSLPROGRAM
+            // vertex/fragment シェーダーを指定
+            #pragma vertex vert
+            #pragma fragment frag
+            // Core.hlslをインクルード
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+
+            // 頂点の入力
+            struct appdata
+            {
+                half4 vertex : POSITION;
+                half3 normal :  NORMAL;
+                float2 uv : TEXCOORD0;
+            };
+            // vertex/fragment シェーダー用の変数
+            struct v2f
+            {
+                half4 vertex : SV_POSITION;
+                float2 uv : TEXCOORD0;
+            };
+
+            // 画像を定義
+            TEXTURE2D(_MainTex);
+            SAMPLER(sampler_MainTex);
+
+            CBUFFER_START(UnityMPerMaterial)
+            float4 _MainTex_ST;
+
+            half _OutlineWidth;
+            half4 _OutlineColor;
+            CBUFFER_END
+
+            // 頂点シェーダー
+            v2f vert(appdata v)
+            {
+                v2f o = (v2f)0;
+
+                // アウトラインの分だけ法線方向に拡大する
+                o.vertex = TransformObjectToHClip(v.vertex + v.normal * (_OutlineWidth / 100));
+                o.uv = TRANSFORM_TEX(v.uv, _MainTex);
+
+                return o;
+            }
+            // フラグメントシェーダー
+            float4 frag(v2f i) : SV_Target
+            {
+                // テクスチャのサンプリング
+                float4 col = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv);
+                // 表面の色にアウトラインの色をブレンドして使用する
+                return col * _OutlineColor;
+            }
+            ENDHLSL
+        }
+
+
+        Pass
+        {
             // Frame Debugger 表示用
             Name "ForwardLit"
             // URPのForwardレンダリングパス
@@ -71,7 +138,7 @@ Shader "MyShader/TOM"
 
             // HLSLを使用する
             HLSLPROGRAM
-            // vertex/fragment シェーダーのを指定
+            // vertex/fragment シェーダーを指定
             #pragma vertex vert
             #pragma fragment frag
             // フォグ用のバリアントを生成
