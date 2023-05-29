@@ -576,7 +576,7 @@ Material:
     - _LimShadeColor1: {r: 0, g: 0, b: 0, a: 1}
     - _LimShadeColor2: {r: 0, g: 0, b: 0, a: 1}
     - _MatCapColor: {r: 1, g: 1, b: 1, a: 1}
-    - _OutlineColor: {r: 0, g: 0, b: 0, a: 1}
+    - _OutlineColor: {r: 1, g: 1, b: 1, a: 1}
     - _OutlineMaskColor: {r: 0, g: 0, b: 0, a: 1}
     - _Outline_Color: {r: 0.5377358, g: 0.23543069, b: 0.13950695, a: 1}
     - _RimLightColor: {r: 1, g: 1, b: 1, a: 1}

@@ -140,7 +140,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 0f83c88893812674fb27a67cc3d624d9, type: 3}
+        m_Texture: {fileID: 2800000, guid: d9b238403efc51b439b538233781723e, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MaskMap:
@@ -563,7 +563,7 @@ Material:
     - _LimShadeColor1: {r: 0, g: 0, b: 0, a: 1}
     - _LimShadeColor2: {r: 0, g: 0, b: 0, a: 1}
     - _MatCapColor: {r: 1, g: 1, b: 1, a: 1}
-    - _OutlineColor: {r: 0, g: 0, b: 0, a: 1}
+    - _OutlineColor: {r: 1, g: 1, b: 1, a: 1}
     - _OutlineMaskColor: {r: 0, g: 0, b: 0, a: 1}
     - _Outline_Color: {r: 0.6792453, g: 0.3093801, b: 0.14417945, a: 1}
     - _RimLightColor: {r: 1, g: 1, b: 1, a: 1}
