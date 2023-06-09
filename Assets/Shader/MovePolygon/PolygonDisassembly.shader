@@ -2,15 +2,16 @@ Shader "MyShader/PolygonDisassembly"
 {
     Properties
     {
+        _MainTex ("Texture", 2D) = "white" {}
         _FarColor("Far Color", Color) = (1, 1, 1, 1)
         _NearColor("Near Color", Color) = (0, 0, 0, 1)
         _ScaleFactor("Scale Factor", float) = 0.5
         _StartDistance("Start Distance", float) = 3.0
     }
         SubShader
-    {
-        Tags { "RenderType" = "Opaque" }
-        LOD 100
+        {
+            Tags { "RenderType" = "Opaque" }
+            LOD 100
 
         Pass
         {
@@ -21,6 +22,8 @@ Shader "MyShader/PolygonDisassembly"
 
             #include "UnityCG.cginc"
 
+            sampler2D _MainTex;
+            float4 _MainTex_ST;
             fixed4 _FarColor;
             fixed4 _NearColor;
             float _ScaleFactor;
@@ -79,9 +82,9 @@ Shader "MyShader/PolygonDisassembly"
                     g2f o;
                     // ñ@ê¸ï˚å¸Ç÷à⁄ìÆ
                     //v.vertex.xyz += normal * destruction * _ScaleFactor * random3;
-                    v.vertex.xyz += normal * (_SinTime.w * 0.5 + 0.5) * _ScaleFactor * random3;
+                    v.vertex.xyz += normal /** (_SinTime.w * 0.5 + 0.5)*/ * _ScaleFactor * random3;
                     o.vertex = UnityObjectToClipPos(v.vertex);
-                    o.uv = v.uv;
+                    o.uv = TRANSFORM_TEX(v.uv, _MainTex);
                     // êFÇïœâª
                     o.color = fixed4(lerp(_NearColor.rgb, _FarColor.rgb, gradient), 1);
                     stream.Append(o);
@@ -91,7 +94,7 @@ Shader "MyShader/PolygonDisassembly"
 
             fixed4 frag(g2f i) : SV_Target
             {
-              fixed4 col = i.color;
+              fixed4 col = tex2D(_MainTex, i.uv);
               return col;
             }
             ENDCG
