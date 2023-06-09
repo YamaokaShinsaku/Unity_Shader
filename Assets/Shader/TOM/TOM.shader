@@ -11,35 +11,35 @@ Shader "MyShader/TOM"
 
         // リム陰(リムライトの陰影版) ベース
         // 色（ベース）
-        _LimShadeColor1("RimShade  BaseColor", Color) = (0, 0, 0, 1)
+        _RimShadeColor1("RimShade  BaseColor", Color) = (0, 0, 0, 1)
         // 影響度
-        _LimShadeColorWeight1("RimShade Influence", Range(0, 1)) = 0.5
+        _RimShadeColorWeight1("RimShade Influence", Range(0, 1)) = 0.5
         // グラデーション範囲
-        _LimShadeMinPower1("RimShade  GradationRange", Range(0, 1)) = 0.3
+        _RimShadeMinPower1("RimShade  GradationRange", Range(0, 1)) = 0.3
         // 最濃リム陰の太さ
-        _LimShadePowerWeight1("RimShade  Intensity", Range(1, 10)) = 10      
+        _RimShadePowerWeight1("RimShade  Intensity", Range(1, 10)) = 10      
 
         // 「外側」 のリム陰
         // 色
-        _LimShadeColor2("RimShade OutsideColor", Color) = (0, 0, 0, 1)
+        _RimShadeColor2("RimShade OutsideColor", Color) = (0, 0, 0, 1)
         // 影響度
-        _LimShadeColorWeight2("RimShade OutsideInfluence", Range(0, 1)) = 0.8
+        _RimShadeColorWeight2("RimShade OutsideInfluence", Range(0, 1)) = 0.8
         // グラデーション範囲
-        _LimShadeMinPower2("RimShade  OutsideGradationRange", Range(0, 1)) = 0.3
+        _RimShadeMinPower2("RimShade  OutsideGradationRange", Range(0, 1)) = 0.3
         // 最濃リム陰の太さ
-        _LimShadePowerWeight2("RimShade  OutSideIntensity", Range(1, 10)) = 2
+        _RimShadePowerWeight2("RimShade  OutSideIntensity", Range(1, 10)) = 2
 
         // リム陰のマスク
         // グラデーション範囲
-        _LimShadeMaskMinPower("RimShadeMask  GradationRange", Range(0, 1)) = 0.3
+        _RimShadeMaskMinPower("RimShadeMask  GradationRange", Range(0, 1)) = 0.3
         // 最濃リム陰マスクの太さ
-        _LimShadeMaskPowerWeight("RimShadeMask  Intensity", Range(0, 10)) = 2
+        _RimShadeMaskPowerWeight("RimShadeMask  Intensity", Range(0, 10)) = 2
 
         // リムライト
         // 影響範囲
-        _LimLightWeight("RimLight  Influence", Range(0, 1)) = 0.5
+        _RimLightWeight("RimLight  Influence", Range(0, 1)) = 0.5
         // グラデーション範囲
-        _LimLightPower("RimLight  GradationRange", Range(1, 5)) = 3
+        _RimLightPower("RimLight  GradationRange", Range(1, 5)) = 3
 
         // アンビエントカラー
         _AmbientColor("Ambient  Color", Color) = (0.5, 0.5, 0.5, 1)
@@ -197,21 +197,21 @@ Shader "MyShader/TOM"
             float4 _BumpMap_ST;
             float _BumpScale;
 
-            float3 _LimShadeColor1;
-            float _LimShadeColorWeight1;
-            float _LimShadeMinPower1;
-            float _LimShadePowerWeight1;
+            float3 _RimShadeColor1;
+            float _RimShadeColorWeight1;
+            float _RimShadeMinPower1;
+            float _RimShadePowerWeight1;
 
-            float3 _LimShadeColor2;
-            float _LimShadeColorWeight2;
-            float _LimShadeMinPower2;
-            float _LimShadePowerWeight2;
+            float3 _RimShadeColor2;
+            float _RimShadeColorWeight2;
+            float _RimShadeMinPower2;
+            float _RimShadePowerWeight2;
 
-            float _LimShadeMaskMinPower;
-            float _LimShadeMaskPowerWeight;
+            float _RimShadeMaskMinPower;
+            float _RimShadeMaskPowerWeight;
 
-            float _LimLightPower;
-            float _LimLightWeight;
+            float _RimLightPower;
+            float _RimLightWeight;
 
             float3 _AmbientColor;
 
@@ -263,38 +263,38 @@ Shader "MyShader/TOM"
                 i.normal = i.tangent * localNormal.x + i.binormal * localNormal.y + i.normal * localNormal.z;
 
                 // 陰１(視線方向に依存して体のフチに色を乗算)の計算を行う
-                float limPower = 1 - max(0, dot(i.normal, i.viewDir));
+                float RimPower = 1 - max(0, dot(i.normal, i.viewDir));
                 // 陰の影響が始まる範囲を調整するパラメータ
-                float limShadePower = inverseLerp(_LimShadeMinPower1, 1.0, limPower);
+                float RimShadePower = inverseLerp(_RimShadeMinPower1, 1.0, RimPower);
                 // 陰色の反映範囲を調整するパラメータ
-                limShadePower = min(limShadePower * _LimShadePowerWeight1, 1);
+                RimShadePower = min(RimShadePower * _RimShadePowerWeight1, 1);
                 // リム陰を調整
-                col.rgb = lerp(col.rgb, albedo.rgb * _LimShadeColor1, limShadePower * _LimShadeColorWeight1);
+                col.rgb = lerp(col.rgb, albedo.rgb * _RimShadeColor1, RimShadePower * _RimShadeColorWeight1);
 
                 // 陰２(陰１の上からさらに色を乗せる)の計算を行う
-                limShadePower = inverseLerp(_LimShadeMinPower2, 1.0, limPower);
+                RimShadePower = inverseLerp(_RimShadeMinPower2, 1.0, RimPower);
                 // 陰色の反映範囲を調整するパラメータ
-                limShadePower = min(limShadePower * _LimShadePowerWeight2, 1);
+                RimShadePower = min(RimShadePower * _RimShadePowerWeight2, 1);
                 // リム陰を調整
-                col.rgb = lerp(col.rgb, albedo.rgb * _LimShadeColor2, limShadePower * _LimShadeColorWeight2);
+                col.rgb = lerp(col.rgb, albedo.rgb * _RimShadeColor2, RimShadePower * _RimShadeColorWeight2);
 
                 // 陰のマスクの計算
                  // マスクの影響が始まる範囲を調整するパラメータ
-                float limShadeMaskPower = inverseLerp(_LimShadeMaskMinPower, 1, limPower);
+                float RimShadeMaskPower = inverseLerp(_RimShadeMaskMinPower, 1, RimPower);
                 // マスクの反映範囲を調整するパラメータ
-                limShadeMaskPower = min(limShadeMaskPower * _LimShadeMaskPowerWeight, 1);
+                RimShadeMaskPower = min(RimShadeMaskPower * _RimShadeMaskPowerWeight, 1);
                 // 陰のマスクを調整
-                col.rgb = lerp(col.rgb, albedo.rgb, limShadeMaskPower);
+                col.rgb = lerp(col.rgb, albedo.rgb, RimShadeMaskPower);
 
                 // リムライト
                 // メインライトの情報を取得
                 Light light = GetMainLight();
                 // 補間値を計算
-                float limLightPower = 1 - max(0, dot(i.normal, -light.direction));
+                float RimLightPower = 1 - max(0, dot(i.normal, -light.direction));
                 // 最終的な反射光（リムライト）
-                float3 limLight = pow(saturate(limPower * limLightPower), _LimLightPower) * light.color;
+                float3 RimLight = pow(saturate(RimPower * RimLightPower), _RimLightPower) * light.color;
                 // リムライトの色を加算
-                col.rgb += limLight * _LimLightWeight;
+                col.rgb += RimLight * _RimLightWeight;
 
                 // Half-Lambert拡散反射光
                 float3 diffuseLight = CalcHalfLambertDiffuse(light.direction, light.color, i.normal);
