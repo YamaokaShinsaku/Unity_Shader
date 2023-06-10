@@ -702,7 +702,6 @@ GameObject:
   - component: {fileID: 1381284814}
   - component: {fileID: 1381284813}
   - component: {fileID: 1381284812}
-  - component: {fileID: 1381284811}
   m_Layer: 0
   m_Name: Sphere_TOM (1)
   m_TagString: Untagged
@@ -710,18 +709,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1381284811
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1381284810}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7f6eec19e73e8d14c8a95b9baa5f469d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!135 &1381284812
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -755,7 +742,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 1b33eb8bab28fda40868b6f946ae01eb, type: 2}
+  - {fileID: 2100000, guid: 03895687338669e4383cc091c23da41f, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
